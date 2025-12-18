@@ -1,0 +1,98 @@
+#simpleChatContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  width: 25em;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 2em auto;
+  background-color: rgb(82, 145, 110);
+  border: .2em solid #28472d;
+  font-family: 'Carlito', sans-serif;
+}
+
+#chatHistory {
+  flex: 1;
+  height: 300px;
+  overflow-y: scroll;
+  padding: .8em;
+}
+
+#chatInputArea {
+  display: flex;
+  border-top-width: .1em;
+  border-top-style: solid;
+}
+
+#chatInput {
+  flex: 1;
+  padding: .8em;
+  border: none;
+  font-size: 14px;
+  background-color: rgb(112, 170, 157);
+}
+
+#chatInput:focus {
+  outline: none;
+}
+
+#chatSendButton {
+  padding: .4em;
+  margin: .4em .4em;
+  background-color: #007bff;
+  border-radius: .5em;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.chat-message {
+  margin-bottom: .5em;
+  padding: .5em;
+  border-radius: .5em;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: .15em solid rgba(35, 67, 54, .8);
+}
+
+.chat-message-system {
+  font-size: 0.9em;
+  font-weight: bold;
+  text-align: center;
+  margin: .5em 0;
+  background-color: rgba(200, 200, 200, 0.5);
+  border-style: none;
+  border-radius: 0;
+}
+
+.chat-message-mine {
+  margin-left: 3em;
+}
+
+.chat-message-not-mine {
+  margin-right: 3em;
+}
+
+.chat-message-system .chat-message-user {
+  display: none;
+}
+
+.chat-message-user {
+  color: rgba(25, 70, 138, 0.8);
+  font-weight: bold;
+  font-size: 0.8em;
+  align-self: flex-end;
+}
+
+.chat-message-text {
+  margin-top: .2em;
+  font-size: 0.9em;
+  color: #363636;
+}
+
+.chat-message-timestamp {
+  font-size: 0.6em;
+  color: #858585;
+  margin-top: .2em;
+  text-align: right;
+}
