@@ -5,7 +5,7 @@ export default class SimpleChat {
     this.create();
     
     this.addMessage({
-      message: 'Bienvenido al Simple Chat!',
+      message: '¡Bienvenido al Simple Chat!',
       type: 'system',
       timestamp: Date.now()
     });
