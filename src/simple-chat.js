@@ -6,25 +6,9 @@ export default class SimpleChat {
     
     this.addMessage({
       message: 'Bienvenido al Simple Chat!',
-      user: 'Sistema',
-      timestamp: Date.now()
-    });
-
-    this.addMessage({
-      message: 'Este es un mensaje de ejemplo del sistema.',
       type: 'system',
-      user: 'Sistema',
       timestamp: Date.now()
     });
-
-    for (let i = 1; i <= 5; i++) {
-      this.addMessage({
-        message: `Este es el mensaje de ejemplo numero ${i}.`,
-        user: `Usuario${i}`,
-        isMine: i % 2 === 0,
-        timestamp: Date.now() - (60000 * i)
-      });
-    }
   }
 
   create() {
@@ -64,8 +48,6 @@ export default class SimpleChat {
     const messageContainer = document.createElement('div');
     messageContainer.className = 'chat-message';
     this.history.appendChild(messageContainer);
-
-    
 
     if (data.type === 'system') {
       messageContainer.classList.add('chat-message-system');
