@@ -1,6 +1,8 @@
 import './simple-chat.css';
 
 export default class SimpleChat {
+  username = 'Anonimo';
+
   constructor() {
     this.create();
     
@@ -24,6 +26,18 @@ export default class SimpleChat {
     linkElem.setAttribute('href', 'https://fonts.googleapis.com/css2?family=Carlito&display=swap');
     document.head.appendChild(linkElem);
 
+    this.userButton = document.createElement('img');
+    this.userButton.className = 'chatButton user';
+    this.userButton.src = './user.svg';
+    this.userButton.alt = 'Cambiar Nombre';
+    this.container.appendChild(this.userButton);
+
+    this.connectionButton = document.createElement('img');
+    this.connectionButton.className = 'chatButton connection';
+    this.connectionButton.src = './disconnected.svg';
+    this.connectionButton.alt = 'Estado de Conexión';
+    this.container.appendChild(this.connectionButton);
+
     this.history ||= document.createElement('div');
     this.history.id = 'chatHistory';
     this.container.appendChild(this.history);
@@ -42,6 +56,28 @@ export default class SimpleChat {
     this.sendButton.id = 'chatSendButton';
     this.sendButton.innerText = 'Enviar';
     this.inputArea.appendChild(this.sendButton);
+
+    this.settingsDialog ||= document.createElement('dialog');
+    this.settingsDialog.className = 'chatSettingsDialog';
+    this.container.appendChild(this.settingsDialog);
+    this.settingsDialog.innerHTML = 
+      `<form method="dialog">
+        <h3>Configuración de Usuario</h3>
+        <label for="chatUserNameInput">Nombre de Usuario:</label>
+        <input type="text" id="chatUserNameInput" name="chatUserNameInput" />
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="console.log(this.closest('dialog').close())">Cancelar</button>
+      </form>`;
+
+    this.userButton.addEventListener('click', () => this.showUserDialog());
+    this.settingsDialog.querySelector('form').addEventListener('submit', evt =>
+      this.username = this.settingsDialog.querySelector('#chatUserNameInput').value.trim() || 'Anonimo'
+    );
+  }
+
+  showUserDialog() {
+    this.settingsDialog.querySelector('#chatUserNameInput').value = this.username;
+    this.settingsDialog.showModal();
   }
 
   addMessage(data) {
