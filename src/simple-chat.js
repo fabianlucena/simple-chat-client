@@ -49,7 +49,7 @@ export default class SimpleChat {
     messageContainer.className = 'chat-message';
     this.history.appendChild(messageContainer);
 
-    if (data.type === 'system') {
+    if (data.type === 'system' || data.type === 'user') {
       messageContainer.classList.add('chat-message-system');
     } else if (data.isMine) {
       messageContainer.classList.add('chat-message-mine');
@@ -59,28 +59,32 @@ export default class SimpleChat {
 
     const user = document.createElement('div');
     user.className = 'chat-message-user';
-    user.innerText = data.user || 'Anonimo';
+    user.innerText = data.user || data.User || 'Anonimo';
     messageContainer.appendChild(user);
 
     const message = document.createElement('div');
     message.className = 'chat-message-text';
-    message.innerText = data.message;
+    message.innerText = data.message || data.Message;
     messageContainer.appendChild(message);
 
     const timestamp = document.createElement('div');
     timestamp.className = 'chat-message-timestamp';
-    const time = new Date(data.timestamp || Date.now());
+    const time = new Date(data.timestamp || data.dateTime || Date.now());
     timestamp.innerText = time.toLocaleTimeString();
     messageContainer.appendChild(timestamp);
 
     this.history.scrollTop = this.history.scrollHeight;
   }
 
+  addSystemMessage(message) {
+    this.addMessage({ message, type: 'system', timestamp: Date.now() });
+  }
+
   newMessage(evt) {
     evt.preventDefault();
     const message = this.input.value.trim();
     if (!message)
-      return; 
+      return;
 
     this.addMessage({ message, isMine: true, user: 'Yo', timestamp: Date.now() });
     this.input.value = '';
