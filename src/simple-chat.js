@@ -70,9 +70,21 @@ export default class SimpleChat {
       </form>`;
 
     this.userButton.addEventListener('click', () => this.showUserDialog());
-    this.settingsDialog.querySelector('form').addEventListener('submit', evt =>
-      this.username = this.settingsDialog.querySelector('#chatUserNameInput').value.trim() || 'Anonimo'
-    );
+    this.settingsDialog.querySelector('form').addEventListener('submit', evt => {
+      this.username = this.settingsDialog.querySelector('#chatUserNameInput').value.trim() || 'Anonimo';
+      this.ws?.send(JSON.stringify({
+        command: 'user',
+        message: this.username,
+      }));
+    });
+
+    this.connectionButton.addEventListener('click', () => {
+      if (this.ws) {
+        this.disconnect();
+      } else {
+        this.connect();
+      }
+    });
   }
 
   showUserDialog() {
@@ -122,7 +134,40 @@ export default class SimpleChat {
     if (!message)
       return;
 
+    this.ws?.send(JSON.stringify({
+      command: 'message',
+      message,
+    }));
+
     this.addMessage({ message, isMine: true, user: 'Yo', timestamp: Date.now() });
     this.input.value = '';
+  }
+
+  connect() {
+    this.disconnect();
+
+    this.ws = new WebSocket('wss://localhost:7241/ws/chat');
+    this.ws.addEventListener('open', () => {
+      this.history.innerHTML = '';
+      this.connectionButton.src = './connected.svg';
+      this.connectionButton.alt = 'Conectado';
+      this.addSystemMessage('Conectado');
+    });
+    this.ws.addEventListener('close', evt => {
+      this.ws = null;
+      this.connectionButton.src = './disconnected.svg';
+      this.connectionButton.alt = 'Desconectado';
+      this.addSystemMessage(`Desconectado`);
+    });
+    this.ws.addEventListener('message', evt => this.addMessage(JSON.parse(evt.data)));
+    this.ws.addEventListener('error', evt => this.addSystemMessage(`Error de conexión: ${evt.message || 'Desconocido'}`));
+  }
+
+  disconnect() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.close();
+    }
+
+    this.ws = null;
   }
 }
