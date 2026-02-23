@@ -1,7 +1,8 @@
 import './simple-chat.css';
 
 export default class SimpleChat {
-  username = 'Anonimo';
+  username = 'adam';
+  auth = '';
 
   constructor() {
     this.create();
@@ -33,9 +34,10 @@ export default class SimpleChat {
     this.container.appendChild(this.userButton);
 
     this.connectionButton = document.createElement('img');
-    this.connectionButton.className = 'chatButton connection';
+    this.connectionButton.className = 'chatButton connection disabled';
     this.connectionButton.src = './disconnected.svg';
     this.connectionButton.alt = 'Estado de Conexión';
+    this.connectionButton.title = 'Click para conectar';
     this.container.appendChild(this.connectionButton);
 
     this.history ||= document.createElement('div');
@@ -62,20 +64,50 @@ export default class SimpleChat {
     this.container.appendChild(this.settingsDialog);
     this.settingsDialog.innerHTML = 
       `<form method="dialog">
-        <h3>Configuración de Usuario</h3>
+        <h3>Iniciar Sesión</h3>
         <label for="chatUserNameInput">Nombre de Usuario:</label>
         <input type="text" id="chatUserNameInput" name="chatUserNameInput" />
-        <button type="submit">Guardar</button>
+        <label for="chatPasswordInput">Contraseña:</label>
+        <input type="password" id="chatPasswordInput" name="chatPasswordInput" value="" />
+        <button type="submit">Iniciar sesión</button>
         <button type="button" onclick="this.closest('dialog').close()">Cancelar</button>
       </form>`;
 
     this.userButton.addEventListener('click', () => this.showUserDialog());
-    this.settingsDialog.querySelector('form').addEventListener('submit', evt => {
-      this.username = this.settingsDialog.querySelector('#chatUserNameInput').value.trim() || 'Anonimo';
-      this.ws?.send(JSON.stringify({
-        command: 'user',
-        message: this.username,
-      }));
+    this.settingsDialog.querySelector('form').addEventListener('submit', async evt => {
+      this.connectionButton.classList.remove('disabled');
+
+      try {
+        var body = {
+          username: this.settingsDialog.querySelector('#chatUserNameInput').value.trim(),
+          password: this.settingsDialog.querySelector('#chatPasswordInput').value.trim(),
+        };
+
+        let response = await fetch('https://localhost:7241/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          let msg = 'respuesta incorrecta del servidor';
+          try {
+            let errorData = await response.json();
+            msg = errorData.message || msg;
+          } catch (e) {}
+          throw new Error('Error de autenticación: ' + msg);
+        }
+
+        let data = await response.json();
+        this.auth = data.token;
+        this.settingsDialog.close();
+      } catch (error) {
+        this.addSystemMessage(`Error de autenticación: ${error.message}`);
+        return;
+      }
+      
+      if (this.auth)
+        this.connect();
     });
 
     this.connectionButton.addEventListener('click', () => {
@@ -146,21 +178,32 @@ export default class SimpleChat {
   connect() {
     this.disconnect();
 
+    if (!this.auth) {
+      this.addSystemMessage('Debe iniciar sesión para conectarse al chat');
+      return;
+    }
+
     this.ws = new WebSocket('wss://localhost:7241/ws/chat');
+
     this.ws.addEventListener('open', () => {
       this.history.innerHTML = '';
       this.connectionButton.src = './connected.svg';
       this.connectionButton.alt = 'Conectado';
+      this.connectionButton.title = 'Click para desconectar';
       this.addSystemMessage('Conectado');
     });
     this.ws.addEventListener('close', evt => {
       this.ws = null;
       this.connectionButton.src = './disconnected.svg';
       this.connectionButton.alt = 'Desconectado';
+      this.connectionButton.title = 'Click para conectar';
       this.addSystemMessage(`Desconectado`);
     });
     this.ws.addEventListener('message', evt => this.addMessage(JSON.parse(evt.data)));
-    this.ws.addEventListener('error', evt => this.addSystemMessage(`Error de conexión: ${evt.message || 'Desconocido'}`));
+    this.ws.addEventListener('error', evt => {
+      this.disconnect();
+      this.addSystemMessage(`Error de conexión: ${evt.message || 'Desconocido'}`);
+    });
   }
 
   disconnect() {

@@ -32,6 +32,11 @@
   right: 3.2em;
 }
 
+.chatButton.connection.disabled {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
 #chatHistory {
   flex: 1;
   height: 350px;
@@ -199,7 +204,8 @@
   margin-bottom: 0.3em;
 }
 
-.chatSettingsDialog input[type="text"] {
+.chatSettingsDialog input[type="text"],
+.chatSettingsDialog input[type="password"] {
   padding: 0.7em;
   background-color: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -209,7 +215,8 @@
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.chatSettingsDialog input[type="text"]:focus {
+.chatSettingsDialog input[type="text"]:focus,
+.chatSettingsDialog input[type="password"]:focus {
   outline: none;
   border-color: rgba(14, 165, 233, 0.5);
   background-color: rgba(255, 255, 255, 0.12);
