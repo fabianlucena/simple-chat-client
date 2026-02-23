@@ -66,7 +66,7 @@ export default class SimpleChat {
         <label for="chatUserNameInput">Nombre de Usuario:</label>
         <input type="text" id="chatUserNameInput" name="chatUserNameInput" />
         <button type="submit">Guardar</button>
-        <button type="button" onclick="console.log(this.closest('dialog').close())">Cancelar</button>
+        <button type="button" onclick="this.closest('dialog').close()">Cancelar</button>
       </form>`;
 
     this.userButton.addEventListener('click', () => this.showUserDialog());
