@@ -1,7 +1,7 @@
 import './simple-chat.css';
 
 export default class SimpleChat {
-  username = 'adam';
+  username = '';
   auth = '';
 
   constructor() {
