@@ -183,7 +183,10 @@ export default class SimpleChat {
       return;
     }
 
-    this.ws = new WebSocket('wss://localhost:7241/ws/chat');
+    this.ws = new WebSocket(
+      'wss://localhost:7241/ws/chat',
+      ['auth', `Bearer-${this.auth}`]
+    );
 
     this.ws.addEventListener('open', () => {
       this.history.innerHTML = '';
